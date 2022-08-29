@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+
+    <title>商品添加</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="shortcut icon" href="images/logo_icon.ico" type="image/x-icon" >
+    <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="./css/adminia.css" rel="stylesheet"/>
+    <script src="./js/vue.js"></script>
+    <script src="./js/axios.min.js"></script>
+    <script src="./js/mall.js"></script>
+</head>
+
+<body>
+<div id="app">
+
+    <!-- 头部开始 -->
+    <div class="navbar navbar-fixed-top">
+
+        <div class="navbar-inner">
+
+            <div class="container">
+
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+
+                <a class="brand" href="./">电子商务系统迷你版</a>
+
+                <div class="nav-collapse">
+
+                    <ul class="nav pull-right">
+
+                        <li class="divider-vertical"></li>
+
+                        <li class="dropdown">
+
+                            <a data-toggle="dropdown" class="dropdown-toggle " href="#">
+                                {{loginUserId}} <b class="caret"></b>
+                            </a>
+
+                            <ul class="dropdown-menu">
+                                <li v-show="unlogin">
+                                    <a href="userLogin.html"><i class="icon-off"></i> Logout</a>
+                                </li>
+                                <li v-show="islogin">
+                                    <a href="./userChangePassword.html"><i class="icon-off"></i> 修改密码</a>
+                                </li>
+                                <li v-show="islogin">
+                                    <a id="clear" href="javascript:;" ><i class="icon-off"></i> 退出 </a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- 头部结束 -->
+    <!-- 中间开始 -->
+    <div id="content">
+
+        <div class="container">
+
+            <div class="row">
+                <!-- 左侧开始 -->
+                <div class="span3">
+                    <!-- 个人信息开始 -->
+                    <div class="account-container">
+
+                        <div class="account-avatar">
+                            <img src="./images/1.jpg" alt="" class="thumbnail"/>
+                        </div>
+
+                        <div class="account-details">
+
+                            <span class="account-name">张三</span>
+
+                            <span class="account-role">19物联网四班</span>
+
+                        </div>
+
+                    </div>
+                    <!-- 个人信息结束 -->
+                    <hr/>
+                    <!-- 导航开始 -->
+                    <ul id="main-nav" class="nav nav-tabs nav-stacked">
+
+                        <li>
+                            <a href="productList.html">
+                                商品列表
+                            </a>
+                        </li>
+                        <li  class="active">
+                            <a href="#">
+                                商品添加
+                            </a>
+                        </li>
+
+                    </ul>
+                    <!-- 导航结束 -->
+                    <hr/>
+                    <!-- 附加信息开始 -->
+                    <div class="sidebar-extra">
+                        <p>附加介绍，个人介绍或项目介绍....</p>
+                    </div>
+                    <!-- 附加信息结束 -->
+                    <br/>
+
+                </div>
+                <!-- 左侧结束 -->
+                <!-- 右侧开始 -->
+                <div class="span9">
+
+                    <!-- 内容填充区域开始 -->
+                    <h1 class="page-title">
+                        新增商品
+                    </h1>
+
+                    <form class="form-horizontal">
+                        <div class="control-group">
+                            <label class="control-label">商品名称</label>
+                            <div class="controls">
+                                <input type="text" v-model="name" placeholder="请输入商品名称">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">商品图片</label>
+                            <div class="controls">
+                                <input type="text" v-model="pic" placeholder="请输入图片">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">商品价格</label>
+                            <div class="controls">
+                                <input type="text" v-model="price" placeholder="请输入商品价格">
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">商品简介</label>
+                            <div class="controls">
+                                <textarea rows="5" v-model="brief" placeholder="请输入商品简介"></textarea>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <div class="controls">
+
+                                <button type="button" class="btn" v-on:click="addProduct">添 加</button>
+                            </div>
+                        </div>
+                    </form>
+                    <!-- 内容填充区域结束 -->
+
+                </div>
+                <!-- 右侧结束 -->
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- 中间结束 -->
+    <!-- 底部开始 -->
+    <div id="footer">
+        <div class="container">
+            <hr/>
+            <p class="text-center">&copy; 2022 郑州工程技术学院19物联网实训.</p>
+        </div>
+
+    </div>
+    <!-- 底部结束 -->
+</div>
+
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            name: "",
+            pic: "",
+            price: "",
+            brief: "",
+            loginUserId: getLoginUserName().userId,
+            islogin : getLoginUserName().id != 0,
+            unlogin : getLoginUserName().id == 0,
+        },
+        methods: {
+            addProduct: function () {
+                axios.post('/api/product/add', {
+                    name: this.name,
+                    pic: this.pic,
+                    price: this.price,
+                    brief: this.brief
+                })
+                    .then(function (response) {
+                        var apiResponse = response.data;
+                        if (apiResponse == 1) {
+                            alert("商品添加成功");
+                        } else {
+                            alert("商品添加失败");
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+
+            }
+        }
+
+    })
+
+</script>
+
+
+<!-- Placed at the end of the document so the pages load faster -->
+<script src="./js/jquery-1.7.2.min.js"></script>
+<script src="./js/bootstrap.js"></script>
+</body>
+
+</html>
